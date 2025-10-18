@@ -1,0 +1,33 @@
+WELCOME TO CODECLASH : 
+------------------------ 
+
+This project enable the mulitple coder compitate to each other by solving fasted and max number of DSA Problems
+and rank them in leadboard 
+
+
+TO Build this project 
+we have breaking this project into multiple Micro-service based Artitechure 
+-----------------------------------------------------------------------------
+
+
+1️) Room Service
+----------------
+
+    Purpose: Manage all room-related operations.
+    
+    Responsibilities:
+            * Create a new room
+            * Join existing room
+            * Start contest (update status, startTime)
+            * End contest / cleanup
+
+     APIs / Events:
+            * POST /createRoom
+            * POST /joinRoom
+            * POST /startContest
+            * DELETE /room/:id
+    
+    WebSocket events: playerJoined(Broadcasts updated player list), roomStatusChanged
+
+    Database:
+            * Room info (roomCode, host, players, questions, status, startTime)
