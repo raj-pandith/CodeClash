@@ -51,7 +51,6 @@ public class RoomController {
         });
 
         roomRepository.save(room);
-        roomRepository.save(new Room("ABCD12", "Raj"));
         return room;
     }
 
