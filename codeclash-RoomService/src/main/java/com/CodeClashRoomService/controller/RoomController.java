@@ -51,6 +51,7 @@ public class RoomController {
         });
 
         roomRepository.save(room);
+        roomRepository.save(new Room("ABCD12", "Raj"));
         return room;
     }
 
@@ -59,6 +60,7 @@ public class RoomController {
     public Room joinRoom(@RequestParam String roomCode, @RequestParam String playerName) {
         Room room = roomRepository.findByCode(roomCode);
         if (room != null && !room.getPlayers().contains(playerName)) {
+
             room.getPlayers().add(playerName);
             room.getPlayerStats().put(playerName, new PlayerStats());
             roomRepository.save(room);
