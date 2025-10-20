@@ -1,16 +1,23 @@
 package com.SubmissionService.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Data;
 
 @Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class SubmitRequest {
     private String playerId;
     private String roomCode;
     private String questionId;
     private String language;
-    private String code;
+    private String code; // Base64 encoded
 }

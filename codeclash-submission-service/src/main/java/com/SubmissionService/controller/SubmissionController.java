@@ -2,11 +2,9 @@ package com.SubmissionService.controller;
 
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import com.SubmissionService.dto.Submission;
 import com.SubmissionService.dto.SubmitRequest;
 import com.SubmissionService.service.SubmissionService;
 
@@ -22,8 +20,11 @@ public class SubmissionController {
     @PostMapping
     public Map<String, String> submit(@RequestBody SubmitRequest request) {
         String submissionId = submissionService.enqueueSubmission(request);
-        return Map.of(
-                "submissionId", submissionId,
-                "status", "queued");
+        return Map.of("submissionId", submissionId, "status", "queued");
+    }
+
+    @GetMapping("/{submissionId}")
+    public Submission getSubmission(@PathVariable String submissionId) {
+        return submissionService.getSubmission(submissionId);
     }
 }

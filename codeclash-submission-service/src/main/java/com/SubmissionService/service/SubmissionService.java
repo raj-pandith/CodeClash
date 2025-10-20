@@ -16,13 +16,16 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class SubmissionService {
+
     private final SubmissionRepository repository;
     private final StringRedisTemplate redisTemplate;
 
     public String enqueueSubmission(SubmitRequest request) {
-        String submissionId = UUID.randomUUID().toString();
+
         // Decode Base64 code
         String decodedCode = new String(Base64.getDecoder().decode(request.getCode()), StandardCharsets.UTF_8);
+
+        String submissionId = UUID.randomUUID().toString();
 
         Submission submission = new Submission();
         submission.setId(submissionId);
@@ -30,14 +33,19 @@ public class SubmissionService {
         submission.setRoomCode(request.getRoomCode());
         submission.setQuestionId(request.getQuestionId());
         submission.setLanguage(request.getLanguage());
+        submission.setCode(decodedCode);
         submission.setStatus("QUEUED");
         submission.setSubmittedAt(System.currentTimeMillis());
-        submission.setCode(decodedCode);
+
         repository.save(submission);
 
         // push submissionId to Redis queue
         redisTemplate.opsForList().rightPush("submission:queue", submissionId);
 
         return submissionId;
+    }
+
+    public Submission getSubmission(String submissionId) {
+        return repository.findById(submissionId).orElse(null);
     }
 }
