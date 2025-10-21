@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @RestController
@@ -57,7 +58,8 @@ public class RoomController {
     // Join Room
     @PostMapping("/join")
     public Room joinRoom(@RequestParam String roomCode, @RequestParam String playerName) {
-        Room room = roomRepository.findByCode(roomCode);
+        Optional<Room> roomBox = roomRepository.findByRoomCode(roomCode);
+        Room room = roomBox.get();
         if (room != null && !room.getPlayers().contains(playerName)) {
 
             room.getPlayers().add(playerName);
@@ -72,7 +74,8 @@ public class RoomController {
 
     @PostMapping("/start")
     public Room startContest(@RequestParam String roomCode, @RequestBody ContestSettings settings) {
-        Room room = roomRepository.findByCode(roomCode);
+        Optional<Room> roomBox = roomRepository.findByRoomCode(roomCode);
+        Room room = roomBox.get();
         if (room != null) {
             room.setStatus("running");
             room.setStartTime(System.currentTimeMillis());
