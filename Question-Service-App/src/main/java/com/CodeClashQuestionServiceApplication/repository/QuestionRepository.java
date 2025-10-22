@@ -20,23 +20,23 @@ public class QuestionRepository {
     public void init() {
         // Add some sample questions
 
-        Question q1 = new Question();
-        q1.setId("Q1");
-        q1.setTitle("Two Sum");
-        q1.setDifficulty("Medium");
-        q1.setTestCases(List.of(
-                new TestCase("2,7,11,15,9", "[0,1]"),
-                new TestCase("3,2,4,6", "[1,2]")));
-
         Question q2 = new Question();
-        q2.setId("Q2");
+        q2.setId("Q2_REV_ARR");
         q2.setTitle("Reverse Array");
         q2.setDifficulty("Easy");
         q2.setTestCases(List.of(
-                new TestCase("[1,2,3,4]", "[4,3,2,1]")));
+                new TestCase("1 2 3 4", "4 3 2 1")));
 
-        questions.add(q1);
+     Question q3 = new Question();
+        q3.setId("Q_ADD");
+        q3.setTitle("ADD two Number");
+        q3.setDifficulty("Easy");
+        q3.setTestCases(List.of(
+                new TestCase("2 3", "5")));
+        
+
         questions.add(q2);
+        questions.add(q3);
     }
 
     public List<Question> getQuestions(int number, String difficulty) {

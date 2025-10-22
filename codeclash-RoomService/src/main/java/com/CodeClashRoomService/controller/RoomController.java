@@ -19,6 +19,7 @@ import java.util.Random;
 
 @RestController
 @RequestMapping("/room")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class RoomController {
 

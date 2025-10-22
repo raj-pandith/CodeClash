@@ -9,6 +9,7 @@ import com.CodeClashQuestionServiceApplication.repository.QuestionRepository;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/questions")
 public class QuestionController {
 
