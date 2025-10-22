@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.SubmissionService.dto.Submission;
 import com.SubmissionService.dto.SubmitRequest;
+import com.SubmissionService.repository.SubmissionRepository.LeaderboardProjection;
 import com.SubmissionService.service.SubmissionService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,8 +31,9 @@ public class SubmissionController {
         return submissionService.getSubmission(submissionId);
     }
 
-    @GetMapping("/all/{roomId}")
-    public List<Submission> getSubmissionRoom(@PathVariable String roomId) {
+    @GetMapping("/leaderboard/{roomId}")
+    public List<LeaderboardProjection> getSubmissionRoom(@PathVariable String roomId) {
         return submissionService.getSubmissionOfRoomId(roomId);
     }
+
 }

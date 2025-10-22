@@ -6,6 +6,7 @@ import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 // --- NEW IMPORT ---
 import { Editor } from '@monaco-editor/react';
+import Leaderboard from './components/Leaderboard.js';
 
 // --- STYLES (Same as before) ---
 const styles = {
@@ -383,11 +384,7 @@ function GamePageQuestion({ roomData, currentUser }) {
 `import java.util.*;
 public class Main{
     public static void main(String[] arg){
-        Scanner sc=new Scanner(System.in);
-         int a=sc.nextInt();
-         int b=sc.nextInt();
-         System.out.println(a+b);
-        sc.close();
+        
     }
 }`);
   const [language, setLanguage] = useState('java');
@@ -624,7 +621,7 @@ public class Main{
       </div>
 
       {/* --- (Scoreboard is the same as before) --- */}
-      <h3 style={{ ...styles.header, marginTop: '30px' }}>Scoreboard:</h3>
+      {/* <h3 style={{ ...styles.header, marginTop: '30px' }}>Scoreboard:</h3>
       <ul style={styles.list}>
         {Object.entries(roomData.playerStats).map(([playerName, stats]) => (
           <li key={playerName} style={styles.listItem}>
@@ -632,6 +629,8 @@ public class Main{
           </li>
         ))}
       </ul>
+       */}
+       <button onClick={()=>navigate(`/leaderboard/`+roomData.roomCode)}>leaderboard</button>
     </div>
   );
 }
@@ -657,6 +656,7 @@ function App() {
           path="/game"
           element={<GamePageQuestion roomData={roomData} currentUser={currentUser} />}
         />
+        <Route path="/leaderboard/:roomCode" element={<Leaderboard />} />
       </Routes>
     </BrowserRouter>
   );

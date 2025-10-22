@@ -64,6 +64,7 @@ public class SubmissionWorker {
             submission.setTotalTests(total);
             submission.setResultJson(results.toString());
             submission.setStatus("FINISHED");
+            submission.setVerdict(passed == total ? "PASS" : "FAILED");
             submission.setCompletedAt(System.currentTimeMillis());
             submissionRepository.save(submission);
 

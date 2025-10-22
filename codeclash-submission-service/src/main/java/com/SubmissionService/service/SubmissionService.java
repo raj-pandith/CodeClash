@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.SubmissionService.dto.Submission;
 import com.SubmissionService.dto.SubmitRequest;
 import com.SubmissionService.repository.SubmissionRepository;
+import com.SubmissionService.repository.SubmissionRepository.LeaderboardProjection;
 
 import lombok.RequiredArgsConstructor;
 
@@ -50,7 +51,7 @@ public class SubmissionService {
         return repository.findById(submissionId).orElse(null);
     }
 
-    public List<Submission> getSubmissionOfRoomId(String roomId) {
-        return repository.findAllByroomCode(roomId);
+    public List<LeaderboardProjection> getSubmissionOfRoomId(String roomId) {
+        return repository.getLeaderboardByRoomCode(roomId);
     }
 }
