@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
-// --- NEW IMPORTS ---
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-// --- NEW IMPORT ---
 import { Editor } from '@monaco-editor/react';
 import Leaderboard from './components/Leaderboard.js';
+import AddQuestionForm from './pages/AddQuestionForm.js'
 
 // --- STYLES (Same as before) ---
 const styles = {
@@ -313,7 +312,7 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
 
 // --- 3. Game Page Component (Actual Game) ---
 // --- (No changes to this component) ---
-function GamePage({ roomData, currentUser }) {
+function GamePageQ({ roomData, currentUser }) {
   // Guard clause
   if (!roomData) {
     return <Navigate to="/" replace />;
@@ -528,11 +527,16 @@ public class Main{
                   backgroundColor: index === selectedQuestionIndex ? '#0056b3' : '#007bff',
                 }}
               >
-                {q.title}
+                {index+1}
               </button>
             ))}
           </div>
           <h3 style={styles.header}>{selectedQuestion.title} ({selectedQuestion.difficulty})</h3>
+           <h5>Description :</h5>
+          <h5>{selectedQuestion.description}</h5>
+          
+           <h5>Input Formate :</h5>
+          <h5>{selectedQuestion.inputFormate}</h5>
           <h4>Test Cases:</h4>
           <ul style={styles.list}>
             {selectedQuestion.testCases.map((tc, index) => (
@@ -657,6 +661,7 @@ function App() {
           element={<GamePageQuestion roomData={roomData} currentUser={currentUser} />}
         />
         <Route path="/leaderboard/:roomCode" element={<Leaderboard />} />
+        <Route path="/add-question" element={<AddQuestionForm/>} />
       </Routes>
     </BrowserRouter>
   );

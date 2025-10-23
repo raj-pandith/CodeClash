@@ -4,12 +4,13 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.SubmissionService.client.QuestionClientService;
 import com.SubmissionService.repository.SubmissionRepository;
-import com.SubmissionService.repository.TestCaseRepository;
 import com.SubmissionService.service.DockerRunner;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,6 @@ public class SubmissionWorker {
 
     private final StringRedisTemplate redisTemplate;
     private final SubmissionRepository submissionRepository;
-    private final TestCaseRepository testCaseRepository;
     private final DockerRunner dockerRunner;
 
     @Scheduled(fixedDelay = 2000)
@@ -36,17 +36,20 @@ public class SubmissionWorker {
         processSubmission(submission);
     }
 
+    @Autowired
+    private QuestionClientService questionClientService;
+
     private void processSubmission(Submission submission) {
         try {
             submission.setStatus("RUNNING");
             submissionRepository.save(submission);
 
-            List<TestCase> testCases = testCaseRepository.findByQuestionId(submission.getQuestionId());
+            List<TestCaseDTO> testCases = questionClientService.getTestCasesForQuestion(submission.getQuestionId());
             int passed = 0;
             int total = testCases.size();
             JSONArray results = new JSONArray();
 
-            for (TestCase tc : testCases) {
+            for (TestCaseDTO tc : testCases) {
                 String output = dockerRunner.runJavaCodeWithInput(submission.getCode(), tc.getInput());
                 boolean isPassed = output.equals(tc.getExpectedOutput().trim());
                 if (isPassed)

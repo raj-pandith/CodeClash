@@ -16,7 +16,7 @@ import lombok.Setter;
 public class SubmitRequest {
     private String playerId;
     private String roomCode;
-    private String questionId;
+    private Integer questionId;
     private String language;
     private String code; // Base64 encoded
 }
