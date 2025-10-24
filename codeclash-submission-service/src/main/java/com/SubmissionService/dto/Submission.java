@@ -12,7 +12,7 @@ public class Submission {
     private String id;
     private String playerId;
     private String roomCode;
-    private Integer questionId;
+    private Long questionNumber;
     private String language;
     @Lob
     private String code;

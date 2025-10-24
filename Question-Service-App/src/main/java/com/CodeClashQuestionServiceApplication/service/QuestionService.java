@@ -1,11 +1,14 @@
 package com.CodeClashQuestionServiceApplication.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.CodeClashQuestionServiceApplication.model.Question;
+import com.CodeClashQuestionServiceApplication.model.QuestionsDifficultySetting;
 import com.CodeClashQuestionServiceApplication.model.TestCase;
 import com.CodeClashQuestionServiceApplication.repository.QuestionRepository;
 
@@ -49,11 +52,44 @@ public class QuestionService {
         return questionRepository.save(newQuestion);
     }
 
-    public List<TestCase> getAllTestCaseByQuestionNumber(int questionNumber) {
-        Question foundQuestion = questionRepository.findByQuestionNumber(questionNumber);
-        List<TestCase> list = foundQuestion.getTestCases();
+    public List<TestCase> getAllTestCaseByQuestionNumber(Long questionNumber) {
+        Optional<Question> foundQuestion = questionRepository.findByQuestionNumber(questionNumber);
+        List<TestCase> list = foundQuestion.get().getTestCases();
         return list;
 
+    }
+
+    public List<Question> getQuestionByAllDifficulty(QuestionsDifficultySetting questionsDifficultySetting) {
+        int easy = questionsDifficultySetting.getEasy();
+        int medium = questionsDifficultySetting.getMedium();
+        int hard = questionsDifficultySetting.getHard();
+
+        List<Question> all = new ArrayList<>();
+        if (easy > 0) {
+            org.springframework.data.domain.Pageable pageableEasy = PageRequest.of(0, easy);
+            List<Question> listOfEasy = questionRepository.findRandomQuestionsByDifficulty("Easy", pageableEasy);
+            all.addAll(listOfEasy);
+        }
+        if (medium > 0) {
+            org.springframework.data.domain.Pageable pageableMedium = PageRequest.of(0, medium);
+            List<Question> listOfMedium = questionRepository.findRandomQuestionsByDifficulty("Medium", pageableMedium);
+            all.addAll(listOfMedium);
+        }
+        if (hard > 0) {
+            org.springframework.data.domain.Pageable pageableHard = PageRequest.of(0, hard);
+            List<Question> listOfHard = questionRepository.findRandomQuestionsByDifficulty("Hard", pageableHard);
+            all.addAll(listOfHard);
+        }
+        return all;
+    }
+
+    public Question findQuestion(Long questionNumber) {
+        Optional<Question> found = questionRepository.findByQuestionNumber(questionNumber);
+        if (found.isPresent()) {
+            return found.get();
+        } else {
+            return null;
+        }
     }
 
 }

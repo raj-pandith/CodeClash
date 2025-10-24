@@ -28,16 +28,17 @@ public class QuestionClientService {
     /**
      * Fetches the list of test cases for a specific question ID.
      *
-     * @param questionId The ID of the question.
+     * @param questionNumber The ID of the question.
      * @return A list of TestCaseDTO objects.
      */
-    public List<TestCaseDTO> getTestCasesForQuestion(Integer questionId) {
+    public List<TestCaseDTO> getTestCasesForQuestion(Long questionNumber) {
 
         // 1. Build the full URL safely
         String url = UriComponentsBuilder
                 .fromHttpUrl(QUESTION_SERVICE_BASE_URL)
                 .path("/testcase/{id}")
-                .buildAndExpand(questionId)
+                .buildAndExpand(
+                        questionNumber)
                 .toUriString();
 
         // 2. Make the HTTP GET request

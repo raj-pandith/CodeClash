@@ -94,6 +94,8 @@ function HomePage({ setRoomData, setCurrentUser }) {
       setRoomData(response.data);
       setCurrentUser(hostName); // Set the current user as the host
       navigate('/lobby');
+      console.log("room create V")
+      console.log(response.data)
     } catch (err) {
       setError('Failed to create room. Please try again.');
       console.error(err);
@@ -151,21 +153,22 @@ function HomePage({ setRoomData, setCurrentUser }) {
   );
 }
 
-
 // --- 2. Lobby Page Component (Waiting Room) ---
-// --- (This component is MODIFIED to use WebSockets) ---
+// --- (This component is MODIFIED to use new difficulty settings) ---
 function LobbyPage({ roomData, setRoomData, currentUser }) {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   
-  // Settings for starting the game
-  const [numberOfQuestions, setNumberOfQuestions] = useState(2);
-  const [difficulty, setDifficulty] = useState('Medium');
+  // --- MODIFIED: Settings for starting the game ---
+  // These now match your new API request body
+  const [numEasy, setNumEasy] = useState(1);
+  const [numMedium, setNumMedium] = useState(1);
+  const [numHard, setNumHard] = useState(1);
 
   // Ref to hold the STOMP client
   const stompClientRef = useRef(null);
 
-  // --- NEW WebSocket Connection Logic ---
+  // --- (WebSocket useEffect... NO CHANGES NEEDED) ---
   useEffect(() => {
     // Only connect if we have room data and aren't already connected
     if (roomData && roomData.roomCode && !stompClientRef.current) {
@@ -189,7 +192,6 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
           console.log('WebSocket Connected: ' + frame);
 
           // 5. Subscribe to player updates
-          // This matches: messagingTemplate.convertAndSend("/topic/" + roomCode + "/players", ...)
           client.subscribe(`/topic/${roomData.roomCode}/players`, (message) => {
             const updatedPlayers = JSON.parse(message.body);
             console.log('Received player update:', updatedPlayers);
@@ -197,7 +199,6 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
           });
 
           // 6. Subscribe to game start
-          // This matches: messagingTemplate.convertAndSend("/topic/" + roomCode + "/start", ...)
           client.subscribe(`/topic/${roomData.roomCode}/start`, (message) => {
             const updatedRoom = JSON.parse(message.body);
             console.log('Received game start message:', updatedRoom);
@@ -221,24 +222,37 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
         stompClientRef.current = null;
       }
     };
-    // Dependency array: Re-run if these values change (e.g., navigating away and back)
   }, [roomData, setRoomData, navigate]);
 
 
-  // Handle starting the game (host only)
-  // This function is now simpler! It just sends the request.
-  // The WebSocket listener above will handle receiving the "start" message.
+  // --- MODIFIED: Handle starting the game (host only) ---
   const handleStartGame = async (e) => {
     e.preventDefault();
+    
+    // Create the new request body object
+    const contestSettings = {
+      easy: numEasy,
+      medium: numMedium,
+      hard: numHard
+    };
+
+    // Ensure at least one question is selected
+    if (contestSettings.easy + contestSettings.medium + contestSettings.hard === 0) {
+        setError('Please select at least one question.');
+        return;
+    }
+    setError(''); // Clear any previous error
+
     try {
-      // We still call the HTTP endpoint to *trigger* the start
-      await axios.post(
+      // We still call the same /room/start endpoint,
+      // but we send the new contestSettings object as the body.
+      const resp=await axios.post(
         `${API_BASE_URL}/room/start?roomCode=${roomData.roomCode}`,
-        { numberOfQuestions, difficulty }
+        contestSettings // Send the new body
       );
-      // No need to do anything with the response here.
-      // The backend will broadcast the "/topic/.../start" message,
-      // which our subscription will catch, update state, and navigate.
+      console.log("response after setting  Quest :")
+      console.log(resp)
+      // The WebSocket listener will handle the navigation to /game
     } catch (err) {
       setError('Failed to start the game.');
       console.error(err);
@@ -255,6 +269,7 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
 
   return (
     <div style={styles.container}>
+      {/* ... (Lobby info and Player list... NO CHANGES) ... */}
       <h2 style={styles.header}>Lobby</h2>
       <div style={styles.lobbyInfo}>
         <p>Room Code: <strong style={styles.roomCode}>{roomData.roomCode}</strong></p>
@@ -271,36 +286,44 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
         ))}
       </ul>
 
-      {/* Host-only "Start Game" Form */}
+      {/* --- MODIFIED: Host-only "Start Game" Form --- */}
       {isHost && isWaiting && (
         <form onSubmit={handleStartGame} style={{ ...styles.form, marginTop: '20px' }}>
           <h3 style={styles.header}>Contest Settings</h3>
           <label>
-            Number of Questions:
+            Number of Easy Questions:
             <input
               type="number"
-              value={numberOfQuestions}
-              onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
+              value={numEasy}
+              onChange={(e) => setNumEasy(parseInt(e.target.value) || 0)}
               style={styles.input}
-              min="1"
+              min="0"
             />
           </label>
           <label>
-            Difficulty:
-            <select
-              value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value)}
+            Number of Medium Questions:
+            <input
+              type="number"
+              value={numMedium}
+              onChange={(e) => setNumMedium(parseInt(e.target.value) || 0)}
               style={styles.input}
-            >
-              <option value="Easy">Easy</option>
-              <option value="Medium">Medium</option>
-              <option value="Hard">Hard</option>
-            </select>
+              min="0"
+            />
+          </label>
+          <label>
+            Number of Hard Questions:
+            <input
+              type="number"
+              value={numHard}
+              onChange={(e) => setNumHard(parseInt(e.target.value) || 0)}
+              style={styles.input}
+              min="0"
+            />
           </label>
           <button type="submit" style={styles.button}>Start Game</button>
         </form>
       )}
-
+      {/* ... (Waiting message and error... NO CHANGES) ... */}
       {!isHost && isWaiting && (
         <p>Waiting for the host ({roomData.host}) to start the game...</p>
       )}
@@ -309,48 +332,8 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
     </div>
   );
 }
-
 // --- 3. Game Page Component (Actual Game) ---
 // --- (No changes to this component) ---
-function GamePageQ({ roomData, currentUser }) {
-  // Guard clause
-  if (!roomData) {
-    return <Navigate to="/" replace />;
-  }
-
-  // Redirect if game isn't running (e.g., manual URL entry)
-  if (roomData.status !== 'running') {
-    return <Navigate to="/lobby" replace />;
-  }
-
-  return (
-    <div style={styles.container}>
-      <h2 style={styles.header}>Game in Progress!</h2>
-      <p>Room: {roomData.roomCode}</p>
-      <p>Start Time: {new Date(roomData.startTime).toLocaleString()}</p>
-      
-      <h3>Settings:</h3>
-      <p>Difficulty: {roomData.contestSettings.difficulty}</p>
-      <p>Questions: {roomData.contestSettings.numberOfQuestions}</p>
-      
-      <h3>Questions:</h3>
-      <ul style={styles.list}>
-        {roomData.questions.map((q, index) => (
-          <li key={index} style={styles.listItem}>{q}</li>
-        ))}
-      </ul>
-      
-      <h3>Scoreboard:</h3>
-      <ul style={styles.list}>
-        {Object.entries(roomData.playerStats).map(([playerName, stats]) => (
-          <li key={playerName} style={styles.listItem}>
-            <strong>{playerName}:</strong> {stats.solved} solved (Time: {stats.timeTaken}ms)
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
 
 
 // --- API Base URLs ---
@@ -402,13 +385,20 @@ public class Main{
     const fetchQuestions = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${QUESTION_API_BASE_URL}/questions`, {
-          params: {
-            number: roomData.contestSettings.numberOfQuestions,
-            difficulty: roomData.contestSettings.difficulty,
-          },
-        });
+        console.log("request for all types random question")
+        // Correct way for a POST request
+  const response = await axios.post(
+    `${QUESTION_API_BASE_URL}/questions/question-all-types-random`, 
+    { // <-- This is the request body
+      easy: roomData.contestSettings.easy,
+      medium: roomData.contestSettings.medium,
+      hard: roomData.contestSettings.hard,
+    }
+  );
+    
+      console.log("response for requested questions V")
         console.log(response.data);
+
         setQuestions(response.data);
         setError(null);
       } catch (err) {
@@ -429,6 +419,7 @@ public class Main{
     try {
       const res = await axios.get(`${SUBMISSION_API_BASE_URL}/submissions/${submissionId}`);
       const data = res.data;
+      console.log("status of your submission")
       console.log(data);
 
       // Check the status from the GET response
@@ -464,17 +455,22 @@ public class Main{
     setSubmissionResult(null); // Clear old results
     setSubmissionStatusText('Submitting code...'); // Set initial status
 
+    
     const selectedQuestion = questions[selectedQuestionIndex];
+    console.log(selectedQuestion)
     const payload = {
       playerId: currentUser,
       roomCode: roomData.roomCode,
-      questionId: selectedQuestion.id,
+      questionNumber: selectedQuestion.questionNumber,
       language: language,
       code: btoa(code), // Base64 encoding
     };
 
     try {
       // 1. POST the submission
+      // console.log("request for submitting V")
+      // console.log(payload);
+      console.log(payload)
       const response = await axios.post(`${SUBMISSION_API_BASE_URL}/submissions`, payload);
       
       // 2. Get the ID and status from the POST response
@@ -519,7 +515,7 @@ public class Main{
           <div style={{ marginBottom: '20px', borderBottom: '1px solid #ccc', paddingBottom: '10px' }}>
             {questions.map((q, index) => (
               <button
-                key={q.id}
+                key={q.questionNumber}
                 onClick={() => setSelectedQuestionIndex(index)}
                 style={{
                   ...styles.button,
@@ -531,6 +527,7 @@ public class Main{
               </button>
             ))}
           </div>
+          <h3>Q No:{selectedQuestion.questionNumber}</h3>
           <h3 style={styles.header}>{selectedQuestion.title} ({selectedQuestion.difficulty})</h3>
            <h5>Description :</h5>
           <h5>{selectedQuestion.description}</h5>

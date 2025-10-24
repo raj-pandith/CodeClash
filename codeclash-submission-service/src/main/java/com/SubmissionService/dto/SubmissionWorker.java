@@ -44,7 +44,7 @@ public class SubmissionWorker {
             submission.setStatus("RUNNING");
             submissionRepository.save(submission);
 
-            List<TestCaseDTO> testCases = questionClientService.getTestCasesForQuestion(submission.getQuestionId());
+            List<TestCaseDTO> testCases = questionClientService.getTestCasesForQuestion(submission.getQuestionNumber());
             int passed = 0;
             int total = testCases.size();
             JSONArray results = new JSONArray();

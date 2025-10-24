@@ -33,7 +33,7 @@ public class SubmissionService {
         submission.setId(submissionId);
         submission.setPlayerId(request.getPlayerId());
         submission.setRoomCode(request.getRoomCode());
-        submission.setQuestionId(request.getQuestionId());
+        submission.setQuestionNumber(request.getQuestionNumber());
         submission.setLanguage(request.getLanguage());
         submission.setCode(decodedCode);
         submission.setStatus("QUEUED");

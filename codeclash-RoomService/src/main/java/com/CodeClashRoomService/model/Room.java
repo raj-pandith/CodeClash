@@ -38,7 +38,7 @@ public class Room {
     @ElementCollection
     @CollectionTable(name = "room_questions", joinColumns = @JoinColumn(name = "room_code"))
     @Column(name = "question_id")
-    private List<String> questions; // question IDs
+    private List<String> questionsNumbers; // question IDs
 
     // Storing a Map as JSON
     @Convert(converter = PlayerStatsMapConverter.class)

@@ -21,11 +21,9 @@ import java.util.ArrayList;
 public class Question {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(unique = true, nullable = false)
-    private Integer questionNumber;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long questionNumber;
 
     private String title;
     private String description;

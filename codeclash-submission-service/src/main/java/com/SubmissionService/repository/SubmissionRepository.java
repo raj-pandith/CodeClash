@@ -25,7 +25,7 @@ public interface SubmissionRepository extends JpaRepository<Submission, String> 
     // 2. UPDATE THE QUERY
     @Query(value = "SELECT " +
             "    player_id AS playerId, " +
-            "    COUNT(DISTINCT question_id) AS solvedQuestionsCount, " +
+            "    COUNT(DISTINCT question_number) AS solvedQuestionsCount, " +
             "    MIN(submitted_at) AS earliestPass " + // <-- FIX 3: Used MIN() aggregate
             "FROM " +
             "    submission " + // <-- FIX 1: Added space

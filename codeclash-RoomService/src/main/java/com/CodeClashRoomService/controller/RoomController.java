@@ -83,10 +83,9 @@ public class RoomController {
             room.setContestSettings(settings);
 
             // Call Question Service
-            List<String> questionIds = questionService.getQuestions(
-                    settings.getNumberOfQuestions(),
-                    settings.getDifficulty());
-            room.setQuestions(questionIds);
+            List<String> questionNumbers = questionService.getAllQuestionType(
+                    settings.getEasy(), settings.getMedium(), settings.getHard());
+            room.setQuestionsNumbers(questionNumbers);
 
             roomRepository.save(room);
 

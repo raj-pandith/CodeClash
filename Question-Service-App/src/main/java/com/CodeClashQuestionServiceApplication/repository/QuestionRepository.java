@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.CodeClashQuestionServiceApplication.model.Question;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
@@ -19,7 +20,8 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             org.springframework.data.domain.Pageable pageable // <-- Spring will use this to add the 'LIMIT' clause
     );
 
-    boolean existsByQuestionNumber(Integer questionNumber);
+    boolean existsByQuestionNumber(Long questionNumber);
 
-    Question findByQuestionNumber(int questionNumber);
+    Optional<Question> findByQuestionNumber(Long questionNumber);
+
 }

@@ -93,7 +93,7 @@ function AddQuestionForm() {
 
       // Success!
       const result = await response.json();
-      setSuccess(`Success! Question "${result.title}" added with ID: ${result.id}`);
+      setSuccess(`Success! Question "${result.title}" added with Question Number: ${result.questionNumber}`);
       setQuestion(initialState); // Reset the form
       
     } catch (err) {
@@ -109,7 +109,7 @@ function AddQuestionForm() {
       <form onSubmit={handleSubmit} style={styles.form}>
         
         {/* --- Question Details --- */}
-        <div style={styles.formGroup}>
+        {/* <div style={styles.formGroup}>
           <label htmlFor="questionNumber">Question Number</label>
           <input
             type="number"
@@ -118,9 +118,9 @@ function AddQuestionForm() {
             value={question.questionNumber}
             onChange={handleChange}
             style={styles.input}
-            required
+          
           />
-        </div>
+        </div> */}
         
         <div style={styles.formGroup}>
           <label htmlFor="title">Title</label>

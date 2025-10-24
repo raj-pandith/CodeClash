@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.CodeClashQuestionServiceApplication.model.Question;
+import com.CodeClashQuestionServiceApplication.model.QuestionsDifficultySetting;
 import com.CodeClashQuestionServiceApplication.model.TestCase;
 import com.CodeClashQuestionServiceApplication.service.QuestionService;
 
@@ -38,8 +39,17 @@ public class QuestionController {
     }
 
     @GetMapping("/testcase/{questionNumber}")
-    public ResponseEntity<List<TestCase>> getTestCaseByQuestionNumber(@PathVariable int questionNumber) {
+    public ResponseEntity<List<TestCase>> getTestCaseByQuestionNumber(@PathVariable Long questionNumber) {
         List<TestCase> list = questionService.getAllTestCaseByQuestionNumber(questionNumber);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
+
+    @PostMapping("/question-all-types-random")
+    public ResponseEntity<List<Question>> getAllTypeQuestions(
+            @RequestBody QuestionsDifficultySetting questionsDifficultySetting) {
+        List<Question> list = questionService.getQuestionByAllDifficulty(questionsDifficultySetting);
+        return new ResponseEntity<>(list, HttpStatus.ACCEPTED);
+
+    }
+
 }
