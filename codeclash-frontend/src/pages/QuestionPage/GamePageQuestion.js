@@ -141,6 +141,12 @@ public class Main {
               <strong>Expected Output:</strong> {selectedQuestion.testCases[0].expectedOutput}
             </div>
           )}
+          {selectedQuestion.testCases.length > 1 && (
+            <div style={gamePageStyle.testCaseBox}>
+              <strong>Input:</strong> {selectedQuestion.testCases[1].input}<br />
+              <strong>Expected Output:</strong> {selectedQuestion.testCases[1].expectedOutput}
+            </div>
+          )}
         </div>
       </div>
 
@@ -166,14 +172,21 @@ public class Main {
           theme="vs-dark"
         />
 
+      <div style={{display:"flex",gap:"5%"}}>
+
         <button
           onClick={handleSubmitCode}
           disabled={isSubmitting}
           style={gamePageStyle.submitButton}
-        >
+          >
           {isSubmitting ? 'Running...' : 'Submit Code'}
         </button>
 
+         <button onClick={() => navigate(`/leaderboard/${roomData.roomCode}`)} style={gamePageStyle.leaderboardBtn}>
+          Leaderboard
+        </button>
+
+          </div>
         {submissionStatusText && (
           <p style={{
             color: submissionResult && submissionResult.passedTests === submissionResult.totalTests ? '#00e676' :
@@ -203,9 +216,7 @@ public class Main {
             </ul>
           </div>
         )}
-        <button onClick={() => navigate(`/leaderboard/${roomData.roomCode}`)} style={gamePageStyle.leaderboardBtn}>
-          Leaderboard
-        </button>
+       
       </div>
     </div>
   );
