@@ -36,7 +36,7 @@ export const getStyles = (isMobile) => ({
 
   inputBase: {
     display: "block",
-    width: "100%",
+    width: "95%",
     padding: "12px",
     marginBottom: "20px",
     borderRadius: "8px",

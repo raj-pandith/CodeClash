@@ -1,31 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom'; // <-- 1. Import useParams
+import { useParams, useNavigate } from 'react-router-dom';
+import styles from '../leaderboardPage/style/leaderboardStyle';
 
-// (Your styles object can stay the same)
-const styles = { /* ... */ };
-
-// --- 2. Remove roomCode from props ---
 function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // --- 3. Get roomCode from the URL ---
   const { roomCode } = useParams();
+  const navigate = useNavigate();
 
   const fetchLeaderboard = async () => {
-    if (!roomCode) return; // Don't fetch if there's no room code
+    if (!roomCode) return;
     setIsLoading(true);
     setError(null);
     setLeaderboard([]);
 
     try {
-      // The URL now uses the roomCode from the params
       const url = `http://localhost:8082/submissions/leaderboard/${roomCode}`;
       const response = await axios.get(url);
-
-      console.log(response);
 
       const sortedData = response.data.sort((a, b) => {
         if (a.solvedQuestionsCount !== b.solvedQuestionsCount) {
@@ -43,34 +36,97 @@ function Leaderboard() {
     }
   };
 
-  // --- 4. (Optional) Fetch data on page load ---
-  // This makes it load automatically when you navigate to the page.
+  // Convert milliseconds → mm:ss
+ const formatTime = (timestamp) => {
+  const now = Date.now();
+  const diff = now - timestamp; // difference in ms
+
+  if (diff < 0) return "—"; // future timestamp safety
+
+  const minutes = Math.floor(diff / 60000);
+  const seconds = Math.floor((diff % 60000) / 1000);
+  return `${minutes}m ${seconds}s ago`;
+};
+
+
   useEffect(() => {
     fetchLeaderboard();
-  }, [roomCode]); // Re-run if the roomCode changes
+  }, [roomCode]);
 
   return (
     <div style={styles.container}>
-      <h2>Leaderboard for Room: {roomCode}</h2>
+      <h2 style={styles.title}>🏆 Leaderboard for Room: {roomCode}</h2>
+
+      <div style={styles.buttonContainer}>
+        <button
+          onClick={fetchLeaderboard}
+          disabled={isLoading}
+          style={styles.button}
+        >
+          {isLoading ? 'Refreshing...' : '🔄 Refresh Leaderboard'}
+        </button>
+
+        
+        <button
+          onClick={() => navigate('/game')}
+          style={styles.secondaryButton}
+        >
+          💻 Go to Code Editor
+        </button>
+
+        <button
+          onClick={() => navigate('/')}
+          style={styles.secondaryButton}
+        >
+          🏠 Create New Room
+        </button>
       
-      {/* You can keep the button to allow manual refresh */}
-      <button
-        onClick={fetchLeaderboard}
-        disabled={isLoading}
-        style={styles.button}
-      >
-        {isLoading ? 'Loading...' : 'Refresh Leaderboard'}
-      </button>
+      
+      </div>
 
-      {/* (Rest of your component is the same) */}
-      {isLoading && <p style={styles.loading}>Fetching results...</p>}
-      {/* ... etc ... */}
+      {error && <p style={styles.error}>{error}</p>}
 
-      {
-            leaderboard.map(ele=>(
-                <div>{ele.playerId} , {ele.solvedQuestionsCount} </div>
-            ))
-      }
+      <div style={styles.tableContainer}>
+        {isLoading ? (
+          <p style={styles.loading}>Fetching leaderboard...</p>
+        ) : leaderboard.length > 0 ? (
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>Rank</th>
+                <th style={styles.th}>Player</th>
+                <th style={styles.th}>Solved</th>
+                <th style={styles.th}>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leaderboard.map((player, index) => (
+                <tr
+                  key={player.playerId}
+                  style={{
+                    ...styles.tr,
+                    background:
+                      index === 0
+                        ? 'linear-gradient(90deg, #FFD700, #FFA500)'
+                        : index === 1
+                        ? 'linear-gradient(90deg, #C0C0C0, #A9A9A9)'
+                        : index === 2
+                        ? 'linear-gradient(90deg, #CD7F32, #8B4513)'
+                        : styles.row.background,
+                  }}
+                >
+                  <td style={styles.td}>{index + 1}</td>
+                  <td style={styles.td}>{player.playerId}</td>
+                  <td style={styles.td}>{player.solvedQuestionsCount}</td>
+                  <td style={styles.td}>{formatTime(player.earliestPass)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p style={styles.noData}>No data available yet.</p>
+        )}
+      </div>
     </div>
   );
 }
