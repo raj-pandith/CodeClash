@@ -6,6 +6,7 @@ import SockJS from 'sockjs-client';
 import { ROOM_API_BASE_URL } from "../../api/apis";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import lobbyStyles from "./style/lobbyStyle";
 
 function LobbyPage({ roomData, setRoomData, currentUser }) {
   const [error, setError] = useState('');
@@ -120,69 +121,79 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
   const isWaiting = roomData.status === 'waiting';
 
   return (
-    <div style={styles.container}>
-      {/* ... (Lobby info and Player list... NO CHANGES) ... */}
-      <h2 style={styles.header}>Lobby</h2>
-      <div style={styles.lobbyInfo}>
-        <p>Room Code: <strong style={styles.roomCode}>{roomData.roomCode}</strong></p>
-        <p>Host: {roomData.host}</p>
-        <p>Status: {roomData.status}</p>
+  <div style={lobbyStyles.container}>
+    <h2 style={lobbyStyles.header}>Lobby</h2>
+
+    <div style={lobbyStyles.mainContent}>
+      <div style={lobbyStyles.leftSection}>
+        <div style={lobbyStyles.lobbyInfo}>
+          <p>Room Code: <strong style={lobbyStyles.roomCode}>{roomData.roomCode}</strong></p>
+          <p>Host: {roomData.host}</p>
+          <p>Status: {roomData.status}</p>
+        </div>
+
+        <br />
+        <br />
+
+        <h3>Players ({roomData.players.length}):</h3>
+        <ul style={lobbyStyles.list}>
+          {roomData.players.map(player => (
+            <li key={player} style={lobbyStyles.listItem} >
+              {player} {player === currentUser ? '(You)' : ''} {player === roomData.host ? '👑' : ''}
+            </li>
+          ))}
+        </ul>
       </div>
 
-      <h3>Players ({roomData.players.length}):</h3>
-      <ul style={styles.list}>
-        {roomData.players.map(player => (
-          <li key={player} style={styles.listItem}>
-            {player} {player === currentUser ? '(You)' : ''} {player === roomData.host ? '👑' : ''}
-          </li>
-        ))}
-      </ul>
-
-      {/* --- MODIFIED: Host-only "Start Game" Form --- */}
-      {isHost && isWaiting && (
-        <form onSubmit={handleStartGame} style={{ ...styles.form, marginTop: '20px' }}>
-          <h3 style={styles.header}>Contest Settings</h3>
-          <label>
-            Number of Easy Questions:
-            <input
-              type="number"
-              value={numEasy}
-              onChange={(e) => setNumEasy(parseInt(e.target.value) || 0)}
-              style={styles.input}
-              min="0"
-            />
-          </label>
-          <label>
-            Number of Medium Questions:
-            <input
-              type="number"
-              value={numMedium}
-              onChange={(e) => setNumMedium(parseInt(e.target.value) || 0)}
-              style={styles.input}
-              min="0"
-            />
-          </label>
-          <label>
-            Number of Hard Questions:
-            <input
-              type="number"
-              value={numHard}
-              onChange={(e) => setNumHard(parseInt(e.target.value) || 0)}
-              style={styles.input}
-              min="0"
-            />
-          </label>
-          <button type="submit" style={styles.button}>Start Game</button>
-        </form>
-      )}
-      {/* ... (Waiting message and error... NO CHANGES) ... */}
-      {!isHost && isWaiting && (
-        <p>Waiting for the host ({roomData.host}) to start the game...</p>
-      )}
-
-      {error && <p style={styles.error}>{error}</p>}
+      <div style={lobbyStyles.rightSection}>
+        {isHost && isWaiting && (
+          <form onSubmit={handleStartGame} style={lobbyStyles.form}>
+            <h3 style={lobbyStyles.subHeader}>Contest Settings</h3>
+            <label>
+              Number of Easy Questions:
+              <input
+                type="number"
+                value={numEasy}
+                onChange={(e) => setNumEasy(parseInt(e.target.value) || 0)}
+                style={lobbyStyles.input}
+                min="0"
+              />
+            </label>
+            <label>
+              Number of Medium Questions:
+              <input
+                type="number"
+                value={numMedium}
+                onChange={(e) => setNumMedium(parseInt(e.target.value) || 0)}
+                style={lobbyStyles.input}
+                min="0"
+              />
+            </label>
+            <label>
+              Number of Hard Questions:
+              <input
+                type="number"
+                value={numHard}
+                onChange={(e) => setNumHard(parseInt(e.target.value) || 0)}
+                style={lobbyStyles.input}
+                min="0"
+              />
+            </label>
+            <button type="submit" style={lobbyStyles.button}>Start Game</button>
+          </form>
+        )}
+        {!isHost && isWaiting && (
+          <p style={lobbyStyles.waitingText}>
+            Waiting for the host ({roomData.host}) to start the game...
+          </p>
+        )}
+      </div>
     </div>
-  );
+
+    {error && <p style={lobbyStyles.error}>{error}</p>}
+  </div>
+);
+
 }
 
 export default LobbyPage;

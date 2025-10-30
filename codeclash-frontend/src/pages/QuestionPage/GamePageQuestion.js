@@ -186,12 +186,14 @@ public class Main{
           <h5>{selectedQuestion.inputFormate}</h5>
           <h4>Test Cases:</h4>
           <ul style={styles.list}>
-            {selectedQuestion.testCases.map((tc, index) => (
-              <li key={index} style={styles.listItem}>
-                <strong>Input:</strong> {tc.input} <br />
-                <strong>Expected Output:</strong> {tc.expectedOutput}
-              </li>
-            ))}
+            
+      {selectedQuestion.testCases.length > 0 && (
+        <li style={styles.listItem}>
+          <strong>Input:</strong> {selectedQuestion.testCases[0].input} <br />
+          <strong>Expected Output:</strong> {selectedQuestion.testCases[0].expectedOutput}
+        </li>
+      )}
+
           </ul>
         </div>
       ) : (
