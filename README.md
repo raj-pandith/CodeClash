@@ -1,5 +1,5 @@
 ## Want to compete with me in coding? Come to CodeClash!
-### Happy to Introduce about CodeClash :)
+### Happy to introduce CodeClash :)
 
 # CodeClash: A Room Based Coding Contest Platform
 
