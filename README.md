@@ -157,7 +157,7 @@ Your application should now be running at `http://localhost:3000`.
   * `POST /questions/question-all-types-random`: Fetches a set of questions based on difficulty (e.g., `{ "easy": 5, "medium": 2,"hard":3 }`).
   * `DELETE /questions/{questionNumber}`: Deletes a question and its test cases.
 
-### Submission Service (Port 8082)
+### Submission & Judgement Service (Port 8082)  
 
   * `POST /submissions`: Submits code for execution.
   * `GET /submissions/{id}`: Polls for the status/result of a single submission.
