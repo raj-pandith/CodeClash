@@ -172,10 +172,11 @@ Your application should now be running at `http://localhost:3000`.
 
 -----
 
-## 🔮Keep an eye for Future Improvements
+## Future Improvements
 
   * **Service Discovery:** Integrate Eureka or Consul for service registration and discovery.
   * **API Gateway:** Add a Spring Cloud Gateway to act as a single entry point for the frontend.
   * **Async Communication:** Replace `RestTemplate` calls with a message broker like RabbitMQ or Kafka for a more resilient, asynchronous architecture.
   * **Secure Code Execution:** Use `Docker` in the Submission Service to safely execute untrusted code.
   * **Authentication:** Add user login/registration using Spring Security and JWT.
+
