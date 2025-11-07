@@ -19,24 +19,38 @@ public interface SubmissionRepository extends JpaRepository<Submission, String> 
 
         int getSolvedQuestionsCount();
 
-        Long getEarliestPass(); // <-- ADDED THIS
+        Long getEarliestPass();
     }
 
-    // 2. UPDATE THE QUERY
-    @Query(value = "SELECT " +
-            "    player_id AS playerId, " +
-            "    COUNT(DISTINCT question_number) AS solvedQuestionsCount, " +
-            "    MIN(submitted_at) AS earliestPass " + // <-- FIX 3: Used MIN() aggregate
-            "FROM " +
-            "    submission " + // <-- FIX 1: Added space
-            "WHERE " +
-            "    verdict = 'PASS' " +
-            "    AND room_code = :roomId " +
-            "GROUP BY " +
-            "    player_id " +
-            "ORDER BY " +
-            "    solvedQuestionsCount DESC, " +
+    // // 2. UPDATE THE QUERY
+    // @Query(value = "SELECT " +
+    // " player_id AS playerId, " +
+    // " COUNT(DISTINCT question_number) AS solvedQuestionsCount, " +
+    // " MIN(submitted_at) AS earliestPass " +
+    // "FROM " +
+    // " submission " +
+    // "WHERE " +
+    // " verdict = 'PASS' " +
+    // " AND room_code = :roomId " +
+    // "GROUP BY " +
+    // " player_id " +
+    // "ORDER BY " +
+    // " solvedQuestionsCount DESC, " +
 
-            "    earliestPass ASC;", nativeQuery = true) // <-- Order by the new alias
+    // " earliestPass ASC;", nativeQuery = true) // <-- Order by the new alias
+    // List<LeaderboardProjection> getLeaderboardByRoomCode(@Param("roomId") String
+    // roomId);
+
+    @Query(value = """
+            SELECT
+                s.player_id AS playerId,
+                COUNT(DISTINCT s.question_number) AS solvedQuestionsCount,
+                MAX(s.submitted_at) AS earliestPass
+            FROM submission s
+            WHERE s.verdict = 'PASS'
+              AND s.room_code = :roomId
+            GROUP BY s.player_id
+            ORDER BY solvedQuestionsCount DESC, earliestPass ASC;
+            """, nativeQuery = true)
     List<LeaderboardProjection> getLeaderboardByRoomCode(@Param("roomId") String roomId);
 }

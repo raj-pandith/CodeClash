@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from '../leaderboardPage/style/leaderboardStyle';
+import { SUBMISSION_API_BASE_URL } from "../../api/apis";
 
 function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -17,8 +18,10 @@ function Leaderboard() {
     setLeaderboard([]);
 
     try {
-      const url = `http://localhost:8082/submissions/leaderboard/${roomCode}`;
+      const url = `${SUBMISSION_API_BASE_URL}/submissions/leaderboard/${roomCode}`;
       const response = await axios.get(url);
+
+      console.log(response);
 
       const sortedData = response.data.sort((a, b) => {
         if (a.solvedQuestionsCount !== b.solvedQuestionsCount) {
