@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './style/styles.js';
+import {useNavigate} from 'react-router-dom';
 
 const initialState = {
   questionNumber: '',
@@ -15,6 +16,7 @@ export default function AddQuestionForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,7 +80,19 @@ export default function AddQuestionForm() {
     <div style={styles.container}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"2%"}}>
         <h2 style={styles.title}>Add New Question</h2>
-        {/* <h2 style={styles.title}>Add New Question</h2> */}
+        <button
+        onClick={() => navigate('/delete')}
+        style={{
+          padding: '1rem 2rem',
+          fontSize: '1rem',
+          borderRadius: '5px',
+          backgroundColor: '#f44336',
+          color: '#fff',
+          border: 'none',
+          cursor: 'pointer',
+          scale:'.8'
+        }}
+      >Delete Question By Id</button>
       </div>
       <form onSubmit={handleSubmit} style={styles.form}>
 

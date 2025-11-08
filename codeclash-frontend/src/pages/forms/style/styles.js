@@ -19,7 +19,7 @@ const styles = {
     gap: '2rem'
   },
   leftColumn: {
-    flex: 1
+    flex: 1,
   },
   rightColumn: {
     flex: 1

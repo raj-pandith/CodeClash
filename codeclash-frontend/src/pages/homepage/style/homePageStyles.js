@@ -1,16 +1,24 @@
 // src/style/homePageStyles.js
+  const bgUrl = "https://img.freepik.com/premium-photo/creative-dark-binary-code-wallpaper-with-numbers-technology-computing-concept-3d-rendering_670147-53906.jpg"; // backend URL
+
 export const getStyles = (isMobile) => ({
   container: {
     display: "flex",
     flexDirection: isMobile ? "column" : "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: "100vh",
+    height: "85vh",
     padding: isMobile ? "5%" : "0 10%",
     backgroundColor: "#0d0d0d",
     color: "#f5f5f5",
     fontFamily: "Poppins, sans-serif",
     gap: isMobile ? "30px" : "0",
+       
+    backgroundImage: `url(${bgUrl})`,
+    backgroundSize: "cover",       
+    backgroundPosition: "center",  
+    backgroundRepeat: "no-repeat"
+
   },
 
   boxBase: {

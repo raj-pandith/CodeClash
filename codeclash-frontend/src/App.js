@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import GamePageQuestion from './pages/QuestionPage/GamePageQuestion.js';
 
 import Leaderboard from './pages/leaderboardPage/Leaderboard.js';
@@ -7,6 +7,7 @@ import AddQuestionForm from './pages/forms/AddQuestionForm.js'
 import HomePage from './pages/homepage/HomePage.js';
 import LobbyPage from './pages/LobbyPage/LobbyPage.js'
 import DeleteQuestionForm from './pages/forms/DeleteQuestionForm.js'
+import Navbar from './components/Navbar.js';
 
 
 function App() {
@@ -14,7 +15,13 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
 
   return (
+    <>
     <BrowserRouter>
+      <Navbar></Navbar>
+      
+       
+   
+   
       <Routes>
         <Route
           path="/"
@@ -33,6 +40,7 @@ function App() {
         <Route path="/delete" element={<DeleteQuestionForm />} />
       </Routes>
     </BrowserRouter>
+          </>
   );
 }
 

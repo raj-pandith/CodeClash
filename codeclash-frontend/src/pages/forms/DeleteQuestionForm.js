@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { QUESTION_API_BASE_URL } from '../../api/apis';
 import deleteSytle from './style/DeleteFormStyles.js';
+import { useNavigate } from 'react-router-dom';
 
 function DeleteQuestionForm() {
   const [questionNumber, setQuestionNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const navigate=useNavigate();
 
   const handleChange = (e) => {
     setQuestionNumber(e.target.value);
@@ -46,6 +48,19 @@ function DeleteQuestionForm() {
   return (
     <div style={deleteSytle.container}>
       <h2 style={deleteSytle.title}>Delete Question</h2>
+      <button
+        onClick={() => navigate('/add-question')}
+        style={{
+          padding: '1rem 2rem',
+          fontSize: '1rem',
+          borderRadius: '5px',
+          backgroundColor: '#0a6b92ff',
+          color: '#fff',
+          border: 'none',
+          cursor: 'pointer',
+          scale:"0.7"
+        }}
+      >Add Question</button>
       <form onSubmit={handleDelete} style={deleteSytle.form}>
         <div style={deleteSytle.formGroup}>
           <label htmlFor="questionNumber">Question Number</label>

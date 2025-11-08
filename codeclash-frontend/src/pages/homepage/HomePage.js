@@ -52,6 +52,7 @@ function HomePage({ setRoomData, setCurrentUser }) {
   };
 
   return (
+
     <div style={styles.container}>
       {/* Create Room */}
       <div style={{ ...styles.boxBase, ...styles.createBox }}>
@@ -71,7 +72,7 @@ function HomePage({ setRoomData, setCurrentUser }) {
               (e.target.style.backgroundColor = "#00cccc")
             }
             onMouseOut={(e) => (e.target.style.backgroundColor = "#00ffff")}
-          >
+            >
             Create Room
           </button>
         </form>
@@ -87,14 +88,14 @@ function HomePage({ setRoomData, setCurrentUser }) {
             value={roomCode}
             onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
             style={{ ...styles.inputBase, ...styles.joinInput }}
-          />
+            />
           <input
             type="text"
             placeholder="Enter your name"
             value={playerName}
             onChange={(e) => setPlayerName(e.target.value)}
             style={{ ...styles.inputBase, ...styles.joinInput }}
-          />
+            />
           <button
             type="submit"
             style={styles.joinButton}
@@ -102,7 +103,7 @@ function HomePage({ setRoomData, setCurrentUser }) {
               (e.target.style.backgroundColor = "#cc0066")
             }
             onMouseOut={(e) => (e.target.style.backgroundColor = "#ff007f")}
-          >
+            >
             Join Room
           </button>
         </form>
