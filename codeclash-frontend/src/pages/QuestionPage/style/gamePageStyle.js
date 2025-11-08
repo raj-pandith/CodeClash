@@ -12,6 +12,7 @@ const gamePageStyle = {
   questionSection: {
     flex: 1,
     minWidth: '300px',
+    maxWidth:'35%',
     backgroundColor: '#1e1e1e',
     borderRadius: '10px',
     padding: '20px',
