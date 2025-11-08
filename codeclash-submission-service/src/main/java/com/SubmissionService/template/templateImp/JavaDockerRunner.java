@@ -1,4 +1,4 @@
-package com.SubmissionService.service;
+package com.SubmissionService.template.templateImp;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -7,11 +7,13 @@ import java.nio.file.Path;
 
 import org.springframework.stereotype.Service;
 
+import com.SubmissionService.template.CodeRunner;
+
 @Service
-public class DockerRunner {
+public class JavaDockerRunner implements CodeRunner {
 
-    public String runJavaCodeWithInput(String code, String input) throws Exception {
-
+    @Override
+    public String runCodeWithInput(String code, String input) throws Exception {
         Path tempDir = Files.createTempDirectory("submission-");
         File codeFile = new File(tempDir.toFile(), "Main.java");
 
@@ -64,6 +66,7 @@ public class DockerRunner {
         if (!errors.isEmpty())
             return "compile_error:\n" + errors;
         return output;
+
     }
 
     private void deleteDirectory(File dir) {
@@ -73,4 +76,5 @@ public class DockerRunner {
                 deleteDirectory(f);
         dir.delete();
     }
+
 }

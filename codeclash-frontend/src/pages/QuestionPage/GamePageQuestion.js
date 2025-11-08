@@ -24,6 +24,17 @@ public class Main {
   const navigate = useNavigate();
 
   useEffect(() => {
+  if(language === 'java') {
+    setCode(`import java.util.*;\npublic class Main {\n    public static void main(String[] args) {\n        \n    }\n}`);
+  } else if(language === 'cpp') {
+    setCode(`#include <iostream>\nusing namespace std;\n\nint main() {\n    \n    return 0;\n}`);
+  } else if(language === 'python') {
+    setCode(`def main():\n    pass\n\nif __name__ == "__main__":\n    main()`);
+  }
+}, [language]);
+
+
+  useEffect(() => {
     if (!roomData || !roomData.contestSettings) {
       navigate('/lobby');
       return;
@@ -80,10 +91,10 @@ public class Main {
     const selectedQuestion = questions[selectedQuestionIndex];
     const payload = {
       playerId: currentUser,
-      roomCode: roomData.roomCode,
-      questionNumber: selectedQuestion.questionNumber,
-      language,
-      code: btoa(code),
+  roomCode: roomData.roomCode,
+  questionNumber: selectedQuestion.questionNumber,
+  language,          // <-- send the selected language
+  code: btoa(code),  // <-- encode code in base64
     };
 
     try {
@@ -160,17 +171,18 @@ public class Main {
             style={gamePageStyle.select}
             >
             <option value="java">Java</option>
-            <option value="javascript">JavaScript</option>
+            {/* <option value="javascript">JavaScript</option> */}
             <option value="python">Python</option>
+            <option value="cpp">C++</option>
           </select>
         </div>
 
-        <Editor
-          height="40vh"
-          language={language}
-          value={code}
-          onChange={(value) => setCode(value || '')}
-          theme="vs-dark"
+          <Editor
+            height="40vh"
+    language={language === 'cpp' ? 'cpp' : language} // maps cpp correctly
+    value={code}
+    onChange={(value) => setCode(value || '')}
+    theme="vs-dark"
           />
 
       <div style={{display:"flex",gap:"5%"}}>

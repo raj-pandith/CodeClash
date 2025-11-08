@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.SubmissionService.dto.Submission;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission, String> {
@@ -21,6 +22,9 @@ public interface SubmissionRepository extends JpaRepository<Submission, String> 
 
         Long getEarliestPass();
     }
+
+    Optional<Submission> findByPlayerIdAndRoomCodeAndQuestionNumber(
+            String playerId, String roomCode, Long questionNumber);
 
     // // 2. UPDATE THE QUERY
     // @Query(value = "SELECT " +

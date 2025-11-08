@@ -13,7 +13,7 @@ public class Submission {
     private String playerId;
     private String roomCode;
     private Long questionNumber;
-    private String language;
+    private String language; // "java", "cpp", "python"
     @Lob
     private String code;
     private String status; // QUEUED, RUNNING, FINISHED, FAILED

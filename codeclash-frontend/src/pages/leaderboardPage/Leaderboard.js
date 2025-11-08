@@ -84,7 +84,6 @@ function Leaderboard() {
           🏠 Create New Room
         </button>
       
-      
       </div>
 
       {error && <p style={styles.error}>{error}</p>}

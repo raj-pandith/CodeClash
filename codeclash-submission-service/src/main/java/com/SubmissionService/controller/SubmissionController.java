@@ -23,7 +23,11 @@ public class SubmissionController {
     @PostMapping
     public Map<String, String> submit(@RequestBody SubmitRequest request) {
         String submissionId = submissionService.enqueueSubmission(request);
-        return Map.of("submissionId", submissionId, "status", "queued");
+        if (submissionId != null) {
+            return Map.of("submissionId", submissionId, "status", "queued");
+        } else {
+            return Map.of("submissionId", submissionId, "status", "already submitted");
+        }
     }
 
     @GetMapping("/{submissionId}")

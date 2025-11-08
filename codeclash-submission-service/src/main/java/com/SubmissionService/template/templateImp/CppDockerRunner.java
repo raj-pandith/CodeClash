@@ -1,4 +1,4 @@
-package com.SubmissionService.service;
+package com.SubmissionService.template.templateImp;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -7,63 +7,62 @@ import java.nio.file.Path;
 
 import org.springframework.stereotype.Service;
 
+import com.SubmissionService.template.CodeRunner;
+
 @Service
-public class DockerRunner {
+public class CppDockerRunner implements CodeRunner {
 
-    public String runJavaCodeWithInput(String code, String input) throws Exception {
+    @Override
+    public String runCodeWithInput(String code, String input) throws Exception {
 
-        Path tempDir = Files.createTempDirectory("submission-");
-        File codeFile = new File(tempDir.toFile(), "Main.java");
+        // 1. Create temporary directory for this submission
+        Path tempDir = Files.createTempDirectory("cpp-submission-");
 
+        // 2. Create Main.cpp file
+        File codeFile = new File(tempDir.toFile(), "Main.cpp");
         try (FileWriter writer = new FileWriter(codeFile)) {
             writer.write(code);
         }
 
+        // 3. Create input.txt file
         File inputFile = new File(tempDir.toFile(), "input.txt");
         try (FileWriter fw = new FileWriter(inputFile)) {
             fw.write(input);
         }
 
-        // String dockerCommand = String.format(
-        // "docker run --rm --network none -v %s:/workspace -w /workspace
-        // openjdk:17-slim bash -c "
-        // +
-        // "\"javac Main.java && timeout 5s java Main < input.txt\"",
-        // tempDir.toAbsolutePath());
-
-        // Get the absolute path for the volume mapping.
+        // 4. Map temp directory to Docker container
         String tempPath = tempDir.toAbsolutePath().toString();
-
-        // Docker is smart enough to handle this Windows path, even in WSL.
         String volumeMapping = String.format("%s:/workspace", tempPath);
 
-        // This is the command that will run *inside* the container.
-        String innerCommand = "javac Main.java && timeout 5s java Main < input.txt";
+        // 5. Command to compile and run C++ code inside Docker
+        String innerCommand = "g++ Main.cpp -o Main && timeout 5s ./Main <input.txt";
 
-        // Build the command as an array of arguments.
+        // 6. Build Docker command
         String[] commandToExecute = {
                 "docker", "run",
                 "--rm",
                 "--network", "none",
                 "-v", volumeMapping,
                 "-w", "/workspace",
-                "openjdk:17-jdk", // Use the full JDK image
-                "sh", "-c", innerCommand // Tell the container's shell to execute our command
+                "gcc:latest", // Docker image with GCC
+                "sh", "-c", innerCommand
         };
 
-        // Execute the command array. This is much more reliable.
+        // 7. Execute Docker command
         Process process = Runtime.getRuntime().exec(commandToExecute);
+        process.waitFor();
 
-        process.waitFor(); // The rest of your code remains the same...
-
+        // 8. Capture output and errors
         String output = new String(process.getInputStream().readAllBytes()).trim();
         String errors = new String(process.getErrorStream().readAllBytes()).trim();
 
+        // 9. Clean up temp directory
         deleteDirectory(tempDir.toFile());
 
         if (!errors.isEmpty())
             return "compile_error:\n" + errors;
         return output;
+
     }
 
     private void deleteDirectory(File dir) {

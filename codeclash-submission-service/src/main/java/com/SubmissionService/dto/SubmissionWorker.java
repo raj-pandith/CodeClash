@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 
 import com.SubmissionService.client.QuestionClientService;
 import com.SubmissionService.repository.SubmissionRepository;
-import com.SubmissionService.service.DockerRunner;
+import com.SubmissionService.template.templateImp.CppDockerRunner;
+import com.SubmissionService.template.templateImp.JavaDockerRunner;
+import com.SubmissionService.template.templateImp.PythonDockerRunner;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +23,12 @@ public class SubmissionWorker {
 
     private final StringRedisTemplate redisTemplate;
     private final SubmissionRepository submissionRepository;
-    private final DockerRunner dockerRunner;
+    private final JavaDockerRunner javaRunner;
+    private final CppDockerRunner cppRunner;
+    private final PythonDockerRunner pythonRunner;
+
+    @Autowired
+    private QuestionClientService questionClientService;
 
     @Scheduled(fixedDelay = 2000)
     public void pollQueue() {
@@ -36,9 +43,6 @@ public class SubmissionWorker {
         processSubmission(submission);
     }
 
-    @Autowired
-    private QuestionClientService questionClientService;
-
     private void processSubmission(Submission submission) {
         try {
             submission.setStatus("RUNNING");
@@ -50,7 +54,7 @@ public class SubmissionWorker {
             JSONArray results = new JSONArray();
 
             for (TestCaseDTO tc : testCases) {
-                String output = dockerRunner.runJavaCodeWithInput(submission.getCode(), tc.getInput());
+                String output = runCodeByLanguage(submission.getCode(), tc.getInput(), submission.getLanguage());
                 boolean isPassed = output.equals(tc.getExpectedOutput().trim());
                 if (isPassed)
                     passed++;
@@ -77,5 +81,14 @@ public class SubmissionWorker {
             submissionRepository.save(submission);
             e.printStackTrace();
         }
+    }
+
+    private String runCodeByLanguage(String code, String input, String language) throws Exception {
+        return switch (language.toLowerCase()) {
+            case "java" -> javaRunner.runCodeWithInput(code, input);
+            case "cpp" -> cppRunner.runCodeWithInput(code, input);
+            case "python" -> pythonRunner.runCodeWithInput(code, input);
+            default -> throw new IllegalArgumentException("Unsupported language: " + language);
+        };
     }
 }
