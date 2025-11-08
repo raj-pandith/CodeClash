@@ -4,6 +4,9 @@ import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import gamePageStyle from "./style/gamePageStyle";
+import { ResizableBox } from 'react-resizable';
+import { Rnd } from "react-rnd";
+
 
 function GamePageQuestion({ roomData, currentUser }) {
   const [questions, setQuestions] = useState([]);
@@ -91,10 +94,10 @@ public class Main {
     const selectedQuestion = questions[selectedQuestionIndex];
     const payload = {
       playerId: currentUser,
-  roomCode: roomData.roomCode,
-  questionNumber: selectedQuestion.questionNumber,
-  language,          // <-- send the selected language
-  code: btoa(code),  // <-- encode code in base64
+      roomCode: roomData.roomCode,
+      questionNumber: selectedQuestion.questionNumber,
+      language,          // <-- send the selected language
+      code: btoa(code),  // <-- encode code in base64
     };
 
     try {
@@ -177,13 +180,21 @@ public class Main {
           </select>
         </div>
 
+         
+         
+    
+
+        <ResizableBox width={800} height={300} minConstraints={[300, 200]} maxConstraints={[1200, 800]}>
           <Editor
-            height="40vh"
-    language={language === 'cpp' ? 'cpp' : language} // maps cpp correctly
-    value={code}
-    onChange={(value) => setCode(value || '')}
-    theme="vs-dark"
+            height="100%"    // fill ResizableBox
+            width="100%"
+            language={language === 'cpp' ? 'cpp' : language}
+            value={code}
+            onChange={(value) => setCode(value || '')}
+            theme="vs-dark"
           />
+        </ResizableBox>
+
 
       <div style={{display:"flex",gap:"5%"}}>
 
@@ -213,12 +224,12 @@ public class Main {
 
         {submissionResult && submissionResult.resultJson && (
           <div style={gamePageStyle.resultBox}>
-  <h4>Submission Details:</h4>
-  <ul style={gamePageStyle.resultList}>
-    {(() => {
-      const testCases = JSON.parse(submissionResult.resultJson);
-      const indexOfFirstFail = testCases.findIndex(tc => !tc.passed);
-      const casesToShow = indexOfFirstFail === -1 ? testCases : testCases.slice(0, indexOfFirstFail + 1);
+      <h4>Submission Details:</h4>
+      <ul style={gamePageStyle.resultList}>
+        {(() => {
+          const testCases = JSON.parse(submissionResult.resultJson);
+          const indexOfFirstFail = testCases.findIndex(tc => !tc.passed);
+          const casesToShow = indexOfFirstFail === -1 ? testCases : testCases.slice(0, indexOfFirstFail + 1);
 
       return casesToShow.map((testCase,index) => (
         <li
