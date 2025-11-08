@@ -3,9 +3,10 @@ import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-route
 import GamePageQuestion from './pages/QuestionPage/GamePageQuestion.js';
 
 import Leaderboard from './pages/leaderboardPage/Leaderboard.js';
-import AddQuestionForm from './pages/AddQuestionForm.js'
+import AddQuestionForm from './pages/forms/AddQuestionForm.js'
 import HomePage from './pages/homepage/HomePage.js';
 import LobbyPage from './pages/LobbyPage/LobbyPage.js'
+import DeleteQuestionForm from './pages/forms/DeleteQuestionForm.js'
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
         />
         <Route path="/leaderboard/:roomCode" element={<Leaderboard />} />
         <Route path="/add-question" element={<AddQuestionForm/>} />
+        <Route path="/delete" element={<DeleteQuestionForm />} />
       </Routes>
     </BrowserRouter>
   );
