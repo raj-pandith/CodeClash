@@ -25,14 +25,6 @@ public class JavaDockerRunner implements CodeRunner {
         try (FileWriter fw = new FileWriter(inputFile)) {
             fw.write(input);
         }
-
-        // String dockerCommand = String.format(
-        // "docker run --rm --network none -v %s:/workspace -w /workspace
-        // openjdk:17-slim bash -c "
-        // +
-        // "\"javac Main.java && timeout 5s java Main < input.txt\"",
-        // tempDir.toAbsolutePath());
-
         // Get the absolute path for the volume mapping.
         String tempPath = tempDir.toAbsolutePath().toString();
 
