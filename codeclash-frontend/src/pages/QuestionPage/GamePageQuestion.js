@@ -213,21 +213,31 @@ public class Main {
 
         {submissionResult && submissionResult.resultJson && (
           <div style={gamePageStyle.resultBox}>
-            <h4>Submission Details:</h4>
-            <ul style={gamePageStyle.resultList}>
-              {JSON.parse(submissionResult.resultJson).map((testCase) => (
-                <li key={testCase.testCaseId} style={{
-                  ...gamePageStyle.resultItem,
-                  backgroundColor: testCase.passed ? '#1b5e20' : '#b71c1c',
-                }}>
-                  <strong>Test Case {testCase.testCaseId}: </strong>
-                  {testCase.passed ? '✅ Passed' : '❌ Failed'} <br />
-                  <small>Expected: {testCase.expected}</small> <br />
-                  <small>Got: {testCase.output}</small>
-                </li>
-              ))}
-            </ul>
-          </div>
+  <h4>Submission Details:</h4>
+  <ul style={gamePageStyle.resultList}>
+    {(() => {
+      const testCases = JSON.parse(submissionResult.resultJson);
+      const indexOfFirstFail = testCases.findIndex(tc => !tc.passed);
+      const casesToShow = indexOfFirstFail === -1 ? testCases : testCases.slice(0, indexOfFirstFail + 1);
+
+      return casesToShow.map((testCase,index) => (
+        <li
+          key={testCase.testCaseId}
+          style={{
+            ...gamePageStyle.resultItem,
+            backgroundColor: testCase.passed ? '#1b5e20' : '#b71c1c',
+          }}
+        >
+          <strong>Test Case{index+1}: </strong>
+          {testCase.passed ? '✅ Passed' : '❌ Failed'} <br />
+          <small>Expected: {testCase.expected}</small> <br />
+          <small>Got: {testCase.output}</small>
+        </li>
+      ));
+    })()}
+  </ul>
+</div>
+
         )}
        
       </div>
