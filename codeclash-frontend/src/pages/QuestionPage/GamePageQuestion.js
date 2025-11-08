@@ -110,6 +110,7 @@ public class Main {
   const selectedQuestion = questions[selectedQuestionIndex];
 
   return (
+    
     <div style={gamePageStyle.container}>
       <div style={gamePageStyle.questionSection}>
         <div style={gamePageStyle.tabContainer}>
@@ -157,7 +158,7 @@ public class Main {
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
             style={gamePageStyle.select}
-          >
+            >
             <option value="java">Java</option>
             <option value="javascript">JavaScript</option>
             <option value="python">Python</option>
@@ -170,7 +171,7 @@ public class Main {
           value={code}
           onChange={(value) => setCode(value || '')}
           theme="vs-dark"
-        />
+          />
 
       <div style={{display:"flex",gap:"5%"}}>
 
@@ -190,7 +191,7 @@ public class Main {
         {submissionStatusText && (
           <p style={{
             color: submissionResult && submissionResult.passedTests === submissionResult.totalTests ? '#00e676' :
-                   submissionResult ? '#ff5252' : '#bbb',
+            submissionResult ? '#ff5252' : '#bbb',
             fontWeight: 'bold',
             marginTop: '10px'
           }}>
