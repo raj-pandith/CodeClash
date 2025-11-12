@@ -30,6 +30,17 @@ const gamePageStyle = {
     cursor: 'pointer',
     transition: '0.3s',
   },
+  timerBox: {
+    fontSize: '1.8em',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    padding: '5px',
+    margin: '5px auto',
+    backgroundColor: '#2c2c2c',
+    borderRadius: '8px',
+    border: '1px solid #444',
+    width: '100px',
+  },
   questionBox: {
     backgroundColor: '#2c2c2c',
     borderRadius: '8px',
@@ -37,7 +48,39 @@ const gamePageStyle = {
     marginTop: '10px',
   },
   difficulty: {
-    color: '#00bcd4',
+    fontWeight: 'bold',
+    fontSize: '0.9em',
+    color: '#f5f5f5', // Default text color
+    padding: '4px 10px',
+    borderRadius: '15px', // Pill shape
+    display: 'inline-block', // Makes the background fit the text
+    marginTop: '5px',
+    marginBottom: '15px',
+    backgroundColor: '#555', // Default background
+  },
+  difficultyEasy: {
+    backgroundColor: '#1b5e20', // Dark Green
+    color: '#81C784', // Light Green text
+  },
+  difficultyMedium: {
+    backgroundColor: '#663c00', // Dark Orange
+    color: '#FFB74D', // Light Orange text
+  },
+  difficultyHard: {
+    backgroundColor: '#b71c1c', // Dark Red
+    color: '#e57373', // Light Red text
+  },
+  exitButton: {
+    backgroundColor: '#d9534f', // Red "danger" color
+    color: 'white',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    alignSelf:'end',
+    scale:0.7
   },
   testCaseBox: {
     backgroundColor: '#333',

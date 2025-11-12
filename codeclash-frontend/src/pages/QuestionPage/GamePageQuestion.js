@@ -8,6 +8,7 @@ import { ResizableBox } from 'react-resizable';
 
 function GamePageQuestion({ roomData, currentUser }) {
   console.log("room data")
+  const [timeLeft, setTimeLeft] = useState(null);
   console.log(roomData)
   const [questions, setQuestions] = useState([]);
   const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
@@ -37,10 +38,59 @@ public class Main {
     }
   }, [language]);
 
+  // Helper to format seconds into MM:SS
+const formatTime = (totalSeconds) => {
+  if (totalSeconds === null) return "Loading...";
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+};
 
-  // --- MODIFIED: useEffect to fetch questions ---
+
+const getDifficultyStyle = (difficulty) => {
+    if (difficulty === 'Easy') {
+      return gamePageStyle.difficultyEasy;
+    }
+    if (difficulty === 'Medium') {
+      return gamePageStyle.difficultyMedium;
+    }
+    if (difficulty === 'Hard') {
+      return gamePageStyle.difficultyHard;
+    }
+    return {}; // Default
+  };
+
+
+  
+useEffect(() => {
+  if (!roomData || !roomData.endTime) return;
+
+  const updateTimer = () => {
+    const remainingMillis = roomData.endTime - Date.now();
+    const remainingSeconds = Math.floor(remainingMillis / 1000);
+
+    if (remainingSeconds > 0) {
+      setTimeLeft(remainingSeconds);
+    } else {
+      setTimeLeft(0);
+      clearInterval(timerInterval);
+      console.log("Time's up!");
+      navigate(`/leaderboard/${roomData.roomCode}`);
+    }
+  };
+
+  updateTimer(); 
+
+  const timerInterval = setInterval(updateTimer, 1000);
+
+  return () => {
+    clearInterval(timerInterval);
+  };
+
+}, [roomData, navigate]); 
+
+
   useEffect(() => {
-    // Let the guard clauses below handle navigation
     if (!roomData || roomData.status !== 'running') {
       return; 
     }
@@ -52,7 +102,6 @@ public class Main {
 
         if (roomData.contestSettings != null) {
           // --- RANDOM MODE ---
-          // This is your original logic, which is correct for random mode.
           console.log("Fetching questions in RANDOM mode", roomData.contestSettings);
           response = await axios.post(
             `${QUESTION_API_BASE_URL}/questions/question-all-types-random`,
@@ -176,8 +225,14 @@ public class Main {
         </div>
 
         <div style={gamePageStyle.questionBox}>
+       <p style={{
+              ...gamePageStyle.difficulty, 
+              ...getDifficultyStyle(selectedQuestion.difficulty) 
+          }}>
+            {selectedQuestion.difficulty.toUpperCase()}
+          </p>
+      
           <h3>Q{selectedQuestion.questionNumber}. {selectedQuestion.title}</h3>
-          <p style={gamePageStyle.difficulty}>{selectedQuestion.difficulty.toUpperCase()}</p>
           <h4>Description</h4>
           <p>{selectedQuestion.description}</p>
           <h4>Input Format</h4>
@@ -198,7 +253,11 @@ public class Main {
         </div>
       </div>
 
-      <div style={gamePageStyle.editorSection}>
+
+          <div style={gamePageStyle.editorSection}>
+          <div style={{ ...gamePageStyle.timerBox, color: timeLeft <= 300 ? '#ff5252' : '#00ffff' ,scale:0.6}}>
+           {formatTime(timeLeft)}
+          </div>
         <div style={gamePageStyle.editorHeader}>
           <label style={gamePageStyle.label}>Language:</label>
           <select
@@ -237,6 +296,13 @@ public class Main {
         <button onClick={() => navigate(`/leaderboard/${roomData.roomCode}`)} style={gamePageStyle.leaderboardBtn}>
           Leaderboard
         </button>
+         <button   onClick={() => {
+             let exit=prompt("type 'exit'");
+             if(exit=='exit')
+                 navigate('/')               
+            }} style={gamePageStyle.exitButton}>
+            Exit Game
+          </button>
 
         </div>
         {submissionStatusText && (
@@ -277,8 +343,11 @@ public class Main {
             </ul>
           </div>
         )}
+
+          
         
       </div>
+        
     </div>
   );
 }

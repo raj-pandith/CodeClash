@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RestController
@@ -133,7 +134,13 @@ public class RoomController {
 
         // --- Common logic from your old method ---
         room.setStatus("running");
-        room.setStartTime(System.currentTimeMillis());
+        long startTime = System.currentTimeMillis();
+        room.setStartTime(startTime);
+
+        long durationInMillis = TimeUnit.MINUTES.toMillis(request.getDurationInMinutes());
+        long endTime = startTime + durationInMillis;
+        room.setEndTime(endTime);
+
         room.setQuestionsNumbers(finalQuestionNumbers); // <-- Set the list from our if/else logic
 
         roomRepository.save(room);

@@ -23,6 +23,7 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
   const [fetchError, setFetchError] = useState('');
   const stompClientRef = useRef(null);
+  const [duration, setDuration] = useState(60);
 
   // --- (useEffect... NO CHANGES) ---
   useEffect(() => {
@@ -117,6 +118,7 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
         questionNumbers: selectedQuestions
       };
     }
+    requestBody.durationInMinutes = duration;
     try {
       console.log("Starting game with settings:", requestBody);
       const resp = await axios.post(
@@ -188,14 +190,14 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
                   onClick={() => setSelectionMode('random')}
                   style={selectionMode === 'random' ? lobbyStyles.modeButtonActive : lobbyStyles.modeButton}
                 >
-                  Random Selection
+                  Random Questions
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectionMode('manual')}
                   style={selectionMode === 'manual' ? lobbyStyles.modeButtonActive : lobbyStyles.modeButton}
                 >
-                  Manual Selection
+                  Select Questions
                 </button>
               </div>
 
@@ -261,7 +263,16 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
                   </ul>
                 </div>
               )}
-
+            <label>
+              Contest Duration (minutes):
+              <input
+                type="number"
+                value={duration}
+                onChange={(e) => setDuration(parseInt(e.target.value) || 0)}
+                style={lobbyStyles.input}
+                min="1"
+              />
+            </label>
               <button type="submit" style={lobbyStyles.button}>Start Game</button>
             </form>
           )}

@@ -16,4 +16,5 @@ public class StartGameRequest {
     // This will hold the [3, 5, 8] list
     // It will be null if selectionMode is "RANDOM"
     private List<Integer> questionNumbers;
+    private int durationInMinutes = 60;
 }

@@ -3,7 +3,7 @@
 const lobbyStyles = {
   container: {
     padding: '20px',
-    maxWidth: '1000px',
+    maxWidth: '80%',
     margin: '0 auto',
     fontFamily: 'Arial, sans-serif',
     backgroundColor: '#1a1a1a', // Dark background

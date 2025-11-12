@@ -45,10 +45,13 @@ public class Room {
     @Convert(converter = PlayerStatsMapConverter.class)
     private Map<String, PlayerStats> playerStats = new HashMap<>();
 
-    private Long startTime;
+    private long startTime;
 
     private String status; // waiting, running, finished
 
     @Convert(converter = ContestSettingsConverter.class)
     private ContestSettings contestSettings;
+
+    // --- NEW FIELD ---
+    private long endTime;
 }
