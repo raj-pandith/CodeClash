@@ -1,0 +1,94 @@
+package com.SubmissionService.dto;
+
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.SubmissionService.client.QuestionClientService;
+import com.SubmissionService.repository.SubmissionRepository;
+import com.SubmissionService.template.templateImp.CppDockerRunner;
+import com.SubmissionService.template.templateImp.JavaDockerRunner;
+import com.SubmissionService.template.templateImp.PythonDockerRunner;
+
+import lombok.RequiredArgsConstructor;
+
+@Component
+@RequiredArgsConstructor
+public class SubmissionWorker {
+
+    private final StringRedisTemplate redisTemplate;
+    private final SubmissionRepository submissionRepository;
+    private final JavaDockerRunner javaRunner;
+    private final CppDockerRunner cppRunner;
+    private final PythonDockerRunner pythonRunner;
+
+    @Autowired
+    private QuestionClientService questionClientService;
+
+    @Scheduled(fixedDelay = 2000)
+    public void pollQueue() {
+        String submissionId = redisTemplate.opsForList().leftPop("submission:queue");
+        if (submissionId == null)
+            return;
+
+        Submission submission = submissionRepository.findById(submissionId).orElse(null);
+        if (submission == null)
+            return;
+
+        processSubmission(submission);
+    }
+
+    private void processSubmission(Submission submission) {
+        try {
+            submission.setStatus("RUNNING");
+            submissionRepository.save(submission);
+
+            List<TestCaseDTO> testCases = questionClientService.getTestCasesForQuestion(submission.getQuestionNumber());
+            int passed = 0;
+            int total = testCases.size();
+            JSONArray results = new JSONArray();
+
+            for (TestCaseDTO tc : testCases) {
+                String output = runCodeByLanguage(submission.getCode(), tc.getInput(), submission.getLanguage());
+                boolean isPassed = output.equals(tc.getExpectedOutput().trim());
+                if (isPassed)
+                    passed++;
+
+                JSONObject obj = new JSONObject();
+                obj.put("testCaseId", tc.getId());
+                obj.put("passed", isPassed);
+                obj.put("output", output);
+                obj.put("expected", tc.getExpectedOutput());
+                results.put(obj);
+            }
+
+            submission.setPassedTests(passed);
+            submission.setTotalTests(total);
+            submission.setResultJson(results.toString());
+            submission.setStatus("FINISHED");
+            submission.setVerdict(passed == total ? "PASS" : "FAILED");
+            submission.setCompletedAt(System.currentTimeMillis());
+            submissionRepository.save(submission);
+
+        } catch (Exception e) {
+            submission.setStatus("FAILED");
+            submission.setVerdict("runtime_error");
+            submissionRepository.save(submission);
+            e.printStackTrace();
+        }
+    }
+
+    private String runCodeByLanguage(String code, String input, String language) throws Exception {
+        return switch (language.toLowerCase()) {
+            case "java" -> javaRunner.runCodeWithInput(code, input);
+            case "cpp" -> cppRunner.runCodeWithInput(code, input);
+            case "python" -> pythonRunner.runCodeWithInput(code, input);
+            default -> throw new IllegalArgumentException("Unsupported language: " + language);
+        };
+    }
+}

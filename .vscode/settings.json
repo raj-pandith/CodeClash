@@ -1,3 +1,14 @@
 {
+<<<<<<< HEAD
     "java.configuration.updateBuildConfiguration": "automatic"
+=======
+<<<<<<< HEAD
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "interactive"
+=======
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic"
+>>>>>>> raj/submission-service
+>>>>>>> main
 }
