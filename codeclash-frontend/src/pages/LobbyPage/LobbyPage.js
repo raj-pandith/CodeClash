@@ -7,28 +7,24 @@ import { Navigate } from "react-router-dom";
 // Import the expanded styles
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import lobbyStyles from "./style/lobbyStyle";
+import lobbyStyles from "./style/lobbyStyle"; // <-- This file will also be updated
 
 function LobbyPage({ roomData, setRoomData, currentUser }) {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // --- Settings for 'Random' mode ---
+  // --- (State... NO CHANGES) ---
   const [numEasy, setNumEasy] = useState(1);
   const [numMedium, setNumMedium] = useState(1);
   const [numHard, setNumHard] = useState(1);
-
-  // --- State for 'Manual' mode ---
-  const [selectionMode, setSelectionMode] = useState('random'); // 'random' or 'manual'
+  const [selectionMode, setSelectionMode] = useState('random');
   const [allQuestions, setAllQuestions] = useState([]);
-  const [selectedQuestions, setSelectedQuestions] = useState([]); // Stores question *numbers*
+  const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
   const [fetchError, setFetchError] = useState('');
-
-  // Ref to hold the STOMP client
   const stompClientRef = useRef(null);
 
-  // --- WebSocket useEffect (No Changes) ---
+  // --- (useEffect... NO CHANGES) ---
   useEffect(() => {
     if (roomData && roomData.roomCode && !stompClientRef.current) {
       const socket = new SockJS(`${ROOM_API_BASE_URL}/ws`);
@@ -38,18 +34,15 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
       client.connect(
         {},
         (frame) => {
-          // Subscribe to player updates
           client.subscribe(`/topic/${roomData.roomCode}/players`, (message) => {
             const updatedPlayers = JSON.parse(message.body);
             setRoomData(prevData => ({ ...prevData, players: updatedPlayers }));
           });
-          
-          // Subscribe to game start
           client.subscribe(`/topic/${roomData.roomCode}/start`, (message) => {
             const updatedRoom = JSON.parse(message.body);
             console.log('Received game start message:', updatedRoom);
             setRoomData(updatedRoom);
-            navigate('/game'); // This handles navigation
+            navigate('/game');
           });
         },
         (error) => {
@@ -58,8 +51,6 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
         }
       );
     }
-    
-    // Cleanup on unmount
     return () => {
       if (stompClientRef.current) {
         stompClientRef.current.disconnect(() => {
@@ -70,7 +61,7 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
     };
   }, [roomData, setRoomData, navigate]);
 
-  // --- useEffect to fetch questions for 'Manual' mode (No Changes) ---
+  // --- (useEffect... NO CHANGES) ---
   useEffect(() => {
     if (selectionMode === 'manual' && allQuestions.length === 0) {
       const fetchQuestions = async () => {
@@ -90,8 +81,7 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
     }
   }, [selectionMode, allQuestions.length]);
 
-
-  // --- Handler for toggling a question checkbox (No Changes) ---
+  // --- (handleQuestionToggle... NO CHANGES) ---
   const handleQuestionToggle = (questionNumber) => {
     setSelectedQuestions(prevSelected => {
       if (prevSelected.includes(questionNumber)) {
@@ -102,15 +92,12 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
     });
   };
 
-  // --- CORRECTED: Handle starting the game (host only) ---
+  // --- (handleStartGame... NO CHANGES) ---
   const handleStartGame = async (e) => {
     e.preventDefault();
     setError('');
-
     let requestBody;
-
     if (selectionMode === 'random') {
-      // --- Logic for 'Random' mode ---
       const totalQuestions = numEasy + numMedium + numHard;
       if (totalQuestions === 0) {
         setError('Please select at least one question.');
@@ -118,14 +105,9 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
       }
       requestBody = {
         selectionMode: "RANDOM",
-        difficultySettings: {
-          easy: numEasy,
-          medium: numMedium,
-          hard: numHard
-        }
+        difficultySettings: { easy: numEasy, medium: numMedium, hard: numHard }
       };
     } else {
-      // --- Logic for 'Manual' mode ---
       if (selectedQuestions.length === 0) {
         setError('Please select at least one question.');
         return;
@@ -135,37 +117,47 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
         questionNumbers: selectedQuestions
       };
     }
-
-    // --- FIX: This try/catch block is now OUTSIDE the if/else ---
     try {
       console.log("Starting game with settings:", requestBody);
-      // This post simply *triggers* the start
       const resp = await axios.post(
         `${ROOM_API_BASE_URL}/room/start?roomCode=${roomData.roomCode}`,
         requestBody 
       );
       console.log("Response from start request:", resp);
-      // The WebSocket listener will handle the navigation to /game
     } catch (err) {
       setError('Failed to start the game.');
       console.error(err);
     }
   };
 
-  // Guard clause (No Changes)
+  // --- NEW: Helper function to get style based on difficulty ---
+  const getDifficultyStyle = (difficulty) => {
+    if (difficulty === 'Easy') {
+      return lobbyStyles.difficultyEasy;
+    }
+    if (difficulty === 'Medium') {
+      return lobbyStyles.difficultyMedium;
+    }
+    if (difficulty === 'Hard') {
+      return lobbyStyles.difficultyHard;
+    }
+    return {}; // Default
+  };
+
+  // --- (Guard clauses... NO CHANGES) ---
   if (!roomData) {
     return <Navigate to="/" replace />;
   }
-
   const isHost = currentUser === roomData.host;
   const isWaiting = roomData.status === 'waiting';
 
-  // --- Return JSX (No Changes) ---
+  // --- (Return JSX... Small change inside) ---
   return (
     <div style={lobbyStyles.container}>
       <h2 style={lobbyStyles.header}>Lobby</h2>
 
       <div style={lobbyStyles.mainContent}>
+        {/* --- (Left Section... NO CHANGES) --- */}
         <div style={lobbyStyles.leftSection}>
           <div style={lobbyStyles.lobbyInfo}>
             <p>Room Code: <strong style={lobbyStyles.roomCode}>{roomData.roomCode}</strong></p>
@@ -183,12 +175,13 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
           </ul>
         </div>
 
+        {/* --- (Right Section... JSX UPDATED) --- */}
         <div style={lobbyStyles.rightSection}>
           {isHost && isWaiting && (
             <form onSubmit={handleStartGame} style={lobbyStyles.form}>
               <h3 style={lobbyStyles.subHeader}>Contest Settings</h3>
 
-              {/* --- Mode Toggle Buttons --- */}
+              {/* --- (Mode Toggle... NO CHANGES) --- */}
               <div style={lobbyStyles.modeToggle}>
                 <button
                   type="button"
@@ -206,7 +199,7 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
                 </button>
               </div>
 
-              {/* --- 'Random' Mode UI --- */}
+              {/* --- (Random Mode... NO CHANGES) --- */}
               {selectionMode === 'random' && (
                 <div style={lobbyStyles.modeContent}>
                   <label>
@@ -219,8 +212,7 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
                       min="0"
                     />
                   </label>
-                  {/* ... other random inputs ... */}
-                   <label>
+                  <label>
                     Number of Medium Questions:
                     <input
                       type="number"
@@ -243,7 +235,7 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
                 </div>
               )}
 
-              {/* --- 'Manual' Mode UI --- */}
+              {/* --- MODIFIED: 'Manual' Mode UI --- */}
               {selectionMode === 'manual' && (
                 <div style={lobbyStyles.modeContent}>
                   {isLoadingQuestions && <p>Loading questions...</p>}
@@ -257,7 +249,12 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
                             checked={selectedQuestions.includes(q.questionNumber)}
                             onChange={() => handleQuestionToggle(q.questionNumber)}
                           />
-                          {q.title} ({q.difficulty})
+                          {q.title} (
+                            {/* This span is new! */}
+                            <span style={getDifficultyStyle(q.difficulty)}>
+                              {q.difficulty}
+                            </span>
+                          )
                         </label>
                       </li>
                     ))}
