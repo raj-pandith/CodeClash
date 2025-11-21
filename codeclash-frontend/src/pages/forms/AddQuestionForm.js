@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './style/styles.js';
 import {useNavigate} from 'react-router-dom';
+import { QUESTION_API_BASE_URL } from '../../api/apis.js';
 
 const initialState = {
   questionNumber: '',
@@ -54,7 +55,7 @@ export default function AddQuestionForm() {
     const payload = { ...question, questionNumber: parseInt(question.questionNumber, 10) };
 
     try {
-      const response = await fetch('http://localhost:8081/questions/add', {
+      const response = await fetch(`${QUESTION_API_BASE_URL}/questions/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

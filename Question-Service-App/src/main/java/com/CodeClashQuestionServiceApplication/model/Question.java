@@ -26,8 +26,12 @@ public class Question {
     private Long questionNumber;
 
     private String title;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
     private String difficulty; // "Easy", "Medium", "Hard"
+
+    @Column(columnDefinition = "TEXT")
     private String inputFormate;
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER // Use
                                                                                                                // EAGER

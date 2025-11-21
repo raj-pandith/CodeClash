@@ -251,7 +251,7 @@ function LobbyPage({ roomData, setRoomData, currentUser }) {
                             checked={selectedQuestions.includes(q.questionNumber)}
                             onChange={() => handleQuestionToggle(q.questionNumber)}
                           />
-                          {q.title} (
+                          Q:{q.questionNumber} {q.title} (
                             {/* This span is new! */}
                             <span style={getDifficultyStyle(q.difficulty)}>
                               {q.difficulty}

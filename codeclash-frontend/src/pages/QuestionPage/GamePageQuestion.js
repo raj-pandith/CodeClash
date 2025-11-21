@@ -234,7 +234,7 @@ useEffect(() => {
       
           <h3>Q{selectedQuestion.questionNumber}. {selectedQuestion.title}</h3>
           <h4>Description</h4>
-          <p>{selectedQuestion.description}</p>
+          <p ><pre>{selectedQuestion.description}</pre></p>
           <h4>Input Format</h4>
           <p>{selectedQuestion.inputFormate}</p>
           <h4>Test Case</h4>
