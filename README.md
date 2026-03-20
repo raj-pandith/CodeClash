@@ -6,6 +6,11 @@
 CodeClash is a full-stack, microservices-based application designed for hosting real-time, room-based coding contests. It allows users to create a room, invite friends via a room code, and compete to solve Data Structures and Algorithms (DSA) problems in a live environment.
 
 <img src="./images/pic1.jpeg">
+<img src="./images/pic2.jpeg">
+<img src="./images/pic3.jpeg">
+<img src="./images/pic4.jpeg">
+<img src="./images/pic5.jpeg">
+<img src="./images/pic6.jpeg">
 
 The platform features a real-time lobby, a code editor, live submission results, and a dynamic leaderboard, all powered by a distributed backend system.
 
